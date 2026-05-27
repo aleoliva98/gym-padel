@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning Gym · Pádel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1c1f28;
+    --border: #252830;
+    --border2: #2f333f;
+    --day1: #c8f135;
+    --day2: #4af0b8;
+    --day3: #f1a435;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --muted2: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(200,241,53,0.1);
+    border: 1px solid rgba(200,241,53,0.25);
+    color: var(--day1);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 9vw, 80px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+  }
+
+  h1 span { color: var(--day1); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 300;
+    margin-top: 12px;
+  }
+
+  /* DAY TABS */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    max-width: 720px;
+    margin: 0 auto 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab-day {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .tab-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--muted2);
+    display: block;
+    line-height: 1;
+  }
+
+  .tab.active-1 { background: rgba(200,241,53,0.1); }
+  .tab.active-1 .tab-day { color: var(--day1); }
+  .tab.active-1 .tab-name { color: var(--day1); }
+
+  .tab.active-2 { background: rgba(74,240,184,0.1); }
+  .tab.active-2 .tab-day { color: var(--day2); }
+  .tab.active-2 .tab-name { color: var(--day2); }
+
+  .tab.active-3 { background: rgba(241,164,53,0.1); }
+  .tab.active-3 .tab-day { color: var(--day3); }
+  .tab.active-3 .tab-name { color: var(--day3); }
+
+  .tab:hover:not(.active-1):not(.active-2):not(.active-3) {
+    background: var(--surface2);
+  }
+
+  /* DAY PANELS */
+  .panel { display: none; max-width: 720px; margin: 0 auto; }
+  .panel.visible { display: block; }
+
+  /* SECTION */
+  .section { margin-bottom: 24px; }
+
+  .section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* WARMUP PILLS */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--muted2);
+  }
+
+  /* METHOD BADGE */
+  .method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted2);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    margin-bottom: 12px;
+  }
+
+  .method-badge strong { color: var(--text); font-weight: 600; }
+
+  /* EXERCISE CARD */
+  .ex-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .ex-card:hover { border-color: var(--border2); }
+
+  .ex-card.open { border-color: var(--border2); }
+
+  .ex-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ex-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    min-width: 24px;
+    opacity: 0.25;
+    line-height: 1;
+  }
+
+  .ex-main { flex: 1; }
+
+  .ex-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .ex-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ex-tag {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .ex-sets-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .d1 .ex-sets-badge { background: rgba(200,241,53,0.12); color: var(--day1); }
+  .d2 .ex-sets-badge { background: rgba(74,240,184,0.12); color: var(--day2); }
+  .d3 .ex-sets-badge { background: rgba(241,164,53,0.12); color: var(--day3); }
+
+  .ex-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.25s;
+  }
+
+  .ex-card.open .ex-chevron { transform: rotate(180deg); }
+
+  /* EXERCISE DETAIL */
+  .ex-detail {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 16px;
+    background: var(--surface2);
+  }
+
+  .ex-card.open .ex-detail { display: block; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 500px) {
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+
+  .detail-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+  }
+
+  .detail-block-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .detail-block p {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--muted2);
+    font-weight: 300;
+  }
+
+  .steps-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .steps-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted2);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .step-num {
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--border2);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .padel-tip {
+    background: rgba(200,241,53,0.06);
+    border: 1px solid rgba(200,241,53,0.15);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--day1);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .padel-tip::before { content: '🎾 '; }
+
+  /* VIDEO LINK */
+  .yt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,0,0,0.1);
+    border: 1px solid rgba(255,0,0,0.25);
+    color: #ff6b6b;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 5px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .yt-btn:hover {
+    background: rgba(255,0,0,0.2);
+    border-color: rgba(255,0,0,0.4);
+  }
+
+  .yt-btn svg { flex-shrink: 0; }
+
+  /* BISERIE LABEL */
+  .biserie-group { margin-bottom: 16px; }
+
+  .biserie-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 0 8px 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .biserie-label span {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+  }
+
+  .d2 .biserie-label span { background: rgba(74,240,184,0.12); color: var(--day2); }
+  .d3 .biserie-label span { background: rgba(241,164,53,0.12); color: var(--day3); }
+
+  /* CARDIO BLOCK */
+  .cardio-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .cardio-icon { font-size: 24px; }
+  .cardio-text { flex: 1; }
+  .cardio-title { font-size: 14px; font-weight: 500; }
+  .cardio-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .cardio-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 1px;
+    opacity: 0.4;
+  }
+
+  /* YT icon inline SVG */
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="badge">Guía de Ejercicios</div>
+  <h1>GYM <span>&</span><br>PÁDEL</h1>
+  <p class="subtitle">Toca cada ejercicio para ver cómo hacerlo</p>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active-1" onclick="showDay(1)">
+    <span class="tab-day">Lunes</span>
+    <span class="tab-name">Pierna</span>
+  </button>
+  <button class="tab" onclick="showDay(2)">
+    <span class="tab-day">Martes</span>
+    <span class="tab-name">Empuje</span>
+  </button>
+  <button class="tab" onclick="showDay(3)">
+    <span class="tab-day">Jueves</span>
+    <span class="tab-name">Tirón</span>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- DÍA 1: PIERNA + CORE -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel d1 visible" id="panel-1">
+
+  <div class="section">
+    <div class="section-label">Calentamiento</div>
+    <div class="pills">
+      <span class="pill">🔵 Foam Roller 5'</span>
+      <span class="pill">Cat Camel x10</span>
+      <span class="pill">Bird Dog x8 c/lado</span>
+      <span class="pill">Movilidad cadera</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Ejercicios · Weider · 3 series · descanso 45"-1'</div>
+
+    <!-- 1. Fitball sentadilla -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">1</span>
+        <div class="ex-main">
+          <div class="ex-name">Fitball pared – Sentadilla</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Cuádriceps · Glúteos · Core</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">x15</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Base de todo movimiento en pista. Mejora la posición baja defensiva y los desplazamientos laterales.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>Coloca el fitball entre tu espalda baja y la pared. Pies separados al ancho de hombros, ligeramente delante de ti. Brazos al frente o en las caderas.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Baja lentamente doblando rodillas hasta 90°.</li>
+              <li><span class="step-num">2</span>Rodillas apuntan hacia fuera (dirección del pie).</li>
+              <li><span class="step-num">3</span>Sube empujando el suelo con los talones.</li>
+              <li><span class="step-num">4</span>No bloquees las rodillas arriba.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=fitball+pared+sentadilla+correcta" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. Wall Sit -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">2</span>
+        <div class="ex-main">
+          <div class="ex-name">Wall Sit</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Cuádriceps · Resistencia muscular</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">20"</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Replica la posición de espera en el pádel. Aguantar en esta postura mejora la resistencia para rallys largos.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>De pie contra la pared, pies separados al ancho de caderas, a unos 60cm de la pared.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Desliza la espalda por la pared hasta que rodillas estén a 90°.</li>
+              <li><span class="step-num">2</span>Muslos paralelos al suelo, espalda pegada a la pared.</li>
+              <li><span class="step-num">3</span>Mantén 20 segundos sin mover los pies.</li>
+              <li><span class="step-num">4</span>Respira con normalidad durante el tiempo.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=wall+sit+ejercicio+correcto" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. Saltos de rana -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">3</span>
+        <div class="ex-main">
+          <div class="ex-name">Saltos de rana</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Potencia · Glúteos · Cuádriceps</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">x6</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Potencia explosiva = remate más fuerte y smash más alto. Ejercicio muy específico para el pádel.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>De pie, pies separados más que el ancho de hombros. Punta de pies ligeramente hacia fuera.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Baja en sentadilla profunda tocando el suelo con las manos.</li>
+              <li><span class="step-num">2</span>Empuja fuerte con las piernas y salta hacia delante.</li>
+              <li><span class="step-num">3</span>Aterriza suavemente con rodillas semiflexionadas.</li>
+              <li><span class="step-num">4</span>Absorbe el impacto, no caigas rígido.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=saltos+de+rana+ejercicio+pliometrico" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+    <!-- 4. Lunge -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">4</span>
+        <div class="ex-main">
+          <div class="ex-name">Lunge adelante sin avanzar</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Glúteos · Cuádriceps · Equilibrio</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">x8 c/p</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Mejora la zancada larga para llegar a las bolas difíciles. El equilibrio unilateral es clave en pista.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>De pie, pies juntos, manos en caderas o brazos al frente para equilibrio. Espalda recta.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Da un paso largo hacia delante con una pierna.</li>
+              <li><span class="step-num">2</span>Baja la rodilla trasera casi al suelo (sin tocar).</li>
+              <li><span class="step-num">3</span>Rodilla delantera no pasa la punta del pie.</li>
+              <li><span class="step-num">4</span>Empuja con el talón delantero y vuelve a posición inicial.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=lunge+zancada+adelante+tecnica+correcta" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+    <!-- 5. Hip Thrust -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">5</span>
+        <div class="ex-main">
+          <div class="ex-name">Hip Thrust a 1 pierna</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Glúteo mayor · Isquiotibiales</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">x8 c/p</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Glúteo fuerte = más potencia en el saque y más velocidad en los cambios de dirección.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>Siéntate en el suelo con el banco detrás. Apoya la espalda alta en el banco. Una pierna en el suelo, la otra elevada.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Empuja con el talón apoyado y eleva las caderas.</li>
+              <li><span class="step-num">2</span>Sube hasta que muslo y torso formen línea recta.</li>
+              <li><span class="step-num">3</span>Aprieta el glúteo en el punto más alto 1 segundo.</li>
+              <li><span class="step-num">4</span>Baja lento sin dejar que las caderas toquen el suelo.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=hip+thrust+una+pierna+tecnica" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+    <!-- 6. Dead Bug -->
+    <div class="ex-card" onclick="toggleEx(this)">
+      <div class="ex-header">
+        <span class="ex-letter">6</span>
+        <div class="ex-main">
+          <div class="ex-name">Dead Bug</div>
+          <div class="ex-meta">
+            <span class="ex-tag">Core · Estabilidad lumbar · Coordinación</span>
+          </div>
+        </div>
+        <span class="ex-sets-badge">x10</span>
+        <span class="ex-chevron">▼</span>
+      </div>
+      <div class="ex-detail">
+        <div class="padel-tip">Core estable = transferencia de fuerza eficiente en cada golpe. Reduce el riesgo de lesiones de espalda.</div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <div class="detail-block-title">Posición inicial</div>
+            <p>Tumbado boca arriba. Brazos extendidos hacia el techo. Caderas y rodillas a 90°. Zona lumbar pegada al suelo.</p>
+          </div>
+          <div class="detail-block">
+            <div class="detail-block-title">Ejecución</div>
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>Baja brazo derecho atrás y extiende pierna izquierda.</li>
+              <li><span class="step-num">2</span>Mantén la espalda baja pegada al suelo siempre.</li>
+              <li><span class="step-num">3</span>Vuelve al centro y alterna lados.</li>
+              <li><span class="step-num">4</span>Movimiento lento y controlado, sin prisas.</li>
+            </ul>
+          </div>
+        </div>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=dead+bug+ejercicio+core+correcto" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          Buscar vídeo en YouTube
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /section -->
+
+  <div class="section">
+    <div class="section-label">Cardio final</div>
+    <div class="cardio-block">
+      <span class="cardio-icon">🏃</span>
+      <div class="cardio-text">
+        <div class="cardio-title">Cinta / Elíptica</div>
+        <div class="cardio-sub">Ritmo moderado · zona aeróbica · puedes hablar</div>
+      </div>
+      <span class="cardio-time">25'</span>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- DÍA 2: EMPUJE -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel d2" id="panel-2">
+
+  <div class="section">
+    <div class="section-label">Calentamiento</div>
+    <div class="pills">
+      <span class="pill">🔵 Foam Roller 5'</span>
+      <span class="pill">Bird Dog x8 c/lado</span>
+      <span class="pill">Dead Bug x10</span>
+      <span class="pill">Wall Angel x10</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Biseries · 3-4 vueltas · descanso 45"-1' entre series</div>
+    <div class="method-badge">Haz A1 → A2 sin descansar · descansa · repite. Luego B1 → B2, etc.</div>
+
+    <!-- BISERIE A -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE A · Pectoral + Tríceps</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">A1</span>
+          <div class="ex-main">
+            <div class="ex-name">Fondos clásicos (flexiones)</div>
+            <div class="ex-meta"><span class="ex-tag">Pectoral · Tríceps · Hombro anterior</span></div>
+          </div>
+          <span class="ex-sets-badge">x8</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Fuerza de empuje del brazo dominante en el remate. Base del pádel ofensivo.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Manos al ancho de hombros o algo más. Cuerpo en línea recta de cabeza a talones. Core activado.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Baja el pecho hasta casi tocar el suelo.</li>
+                <li><span class="step-num">2</span>Codos a 45° del cuerpo (no abiertos del todo).</li>
+                <li><span class="step-num">3</span>Empuja hasta extender los brazos.</li>
+                <li><span class="step-num">4</span>Si no puedes con 8, hazlos en rodillas sin problema.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=flexiones+correctas+tecnica+principiantes" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">A2</span>
+          <div class="ex-main">
+            <div class="ex-name">Dips de tríceps en banco</div>
+            <div class="ex-meta"><span class="ex-tag">Tríceps · Hombro anterior</span></div>
+          </div>
+          <span class="ex-sets-badge">x10</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Extensión final del brazo en el golpe. El tríceps da la "aceleración" al remate.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Manos en el borde de un banco detrás de ti. Pies en el suelo con rodillas dobladas (más fácil) o extendidas.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Baja doblando los codos hasta ~90°.</li>
+                <li><span class="step-num">2</span>Espalda cerca del banco, no te separes.</li>
+                <li><span class="step-num">3</span>Empuja con los tríceps para subir.</li>
+                <li><span class="step-num">4</span>No bloquees los codos arriba.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=dips+triceps+banco+tecnica+correcta" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- BISERIE B -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE B · TRX Pectoral + Tríceps</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">B1</span>
+          <div class="ex-main">
+            <div class="ex-name">TRX apertura 1 brazo</div>
+            <div class="ex-meta"><span class="ex-tag">Pectoral · Hombro · Estabilidad</span></div>
+          </div>
+          <span class="ex-sets-badge">x8</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Trabaja la estabilidad del hombro en un plano similar al bandeja y el remate en pádel.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De cara a la pared de anclaje del TRX. Agarra una sola cinta con la mano. Cuerpo inclinado hacia delante.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Abre el brazo hacia el lado controlando la tensión.</li>
+                <li><span class="step-num">2</span>Mantén el core firme todo el tiempo.</li>
+                <li><span class="step-num">3</span>Cierra volviendo a posición inicial.</li>
+                <li><span class="step-num">4</span>Cuanto más inclinado, más difícil. Empieza suave.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=TRX+chest+fly+apertura+un+brazo" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">B2</span>
+          <div class="ex-main">
+            <div class="ex-name">TRX extensión de tríceps</div>
+            <div class="ex-meta"><span class="ex-tag">Tríceps · Core</span></div>
+          </div>
+          <span class="ex-sets-badge">x8</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Tríceps fuerte y estable para mantener la muñeca y el codo protegidos durante el golpeo.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De cara a la pared de anclaje. Agarra las cintas con ambas manos a la altura de la cara. Cuerpo inclinado.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Dobla los codos dejando que la cabeza pase entre las manos.</li>
+                <li><span class="step-num">2</span>Extiende los codos empujando las cintas hacia delante.</li>
+                <li><span class="step-num">3</span>El movimiento es solo en el codo, el resto fijo.</li>
+                <li><span class="step-num">4</span>Más inclinado = más intensidad.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=TRX+tricep+extension+tecnica" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- BISERIE C -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE C · Hombro</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">C1</span>
+          <div class="ex-main">
+            <div class="ex-name">Press Arnold (mancuernas ligeras)</div>
+            <div class="ex-meta"><span class="ex-tag">Hombro completo · Tríceps</span></div>
+          </div>
+          <span class="ex-sets-badge">x10</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Fortalece el hombro en toda su rotación. Muy útil para el saque y los globos.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Sentado o de pie. Mancuernas a la altura de los hombros, palmas mirando hacia ti, codos doblados.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Al subir, rota las muñecas hacia fuera.</li>
+                <li><span class="step-num">2</span>Extiende los brazos arriba con palmas al frente.</li>
+                <li><span class="step-num">3</span>Baja invirtiendo el movimiento.</li>
+                <li><span class="step-num">4</span>Usa peso muy ligero (4-6kg) para empezar.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=press+arnold+mancuernas+tecnica+correcta" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">C2</span>
+          <div class="ex-main">
+            <div class="ex-name">Elevaciones laterales</div>
+            <div class="ex-meta"><span class="ex-tag">Deltoides medial · Hombro</span></div>
+          </div>
+          <span class="ex-sets-badge">x12</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">El deltoides medial da anchura y estabilidad al hombro. Protege contra las lesiones más comunes en pádel.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De pie, mancuernas a los lados, ligera flexión de codos. Pecho hacia fuera, sin encoger hombros.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Eleva los brazos lateralmente hasta altura de hombros.</li>
+                <li><span class="step-num">2</span>El codo ligeramente más alto que la muñeca.</li>
+                <li><span class="step-num">3</span>Baja lento (2-3 segundos), no dejes caer.</li>
+                <li><span class="step-num">4</span>Peso muy ligero, 3-5kg. La técnica es todo aquí.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=elevaciones+laterales+hombro+tecnica+correcta" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <div class="section-label">Cardio final</div>
+    <div class="cardio-block">
+      <span class="cardio-icon">🚴</span>
+      <div class="cardio-text">
+        <div class="cardio-title">Bici / Elíptica</div>
+        <div class="cardio-sub">Ritmo constante · recuperación activa para hombros</div>
+      </div>
+      <span class="cardio-time">25'</span>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- DÍA 3: TIRÓN -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel d3" id="panel-3">
+
+  <div class="section">
+    <div class="section-label">Calentamiento</div>
+    <div class="pills">
+      <span class="pill">🔵 Foam Roller 5'</span>
+      <span class="pill">Cat Camel x10</span>
+      <span class="pill">Bird Dog x8 c/lado</span>
+      <span class="pill">Dead Bug x10</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Biseries · 3-4 vueltas · descanso 45"-1' entre series</div>
+    <div class="method-badge">Haz A1 → A2 sin descansar · descansa · repite. Luego B1 → B2, etc.</div>
+
+    <!-- BISERIE A -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE A · Espalda + Bíceps</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">A1</span>
+          <div class="ex-main">
+            <div class="ex-name">TRX remo</div>
+            <div class="ex-meta"><span class="ex-tag">Espalda · Bíceps · Retracción escapular</span></div>
+          </div>
+          <span class="ex-sets-badge">x10</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">La espalda estabiliza cada golpe. El remo en TRX mejora la postura y previene lesiones de hombro.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De cara al punto de anclaje, cuerpo inclinado hacia atrás cogiendo las cintas. Brazos extendidos, cuerpo recto.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Tira de las cintas llevando el pecho hacia las manos.</li>
+                <li><span class="step-num">2</span>Codos pasan junto al cuerpo hacia atrás.</li>
+                <li><span class="step-num">3</span>Aprieta los omóplatos al final del movimiento.</li>
+                <li><span class="step-num">4</span>Baja lento y controlado. El core firme siempre.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=TRX+remo+row+tecnica+correcta" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">A2</span>
+          <div class="ex-main">
+            <div class="ex-name">Curl de bíceps con gomas</div>
+            <div class="ex-meta"><span class="ex-tag">Bíceps · Antebrazo</span></div>
+          </div>
+          <span class="ex-sets-badge">x12</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Bíceps fuerte = mejor control de la pala y más aguante en sesiones largas.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De pie sobre la goma elástica. Agarra los extremos con las palmas mirando hacia arriba. Codos pegados al cuerpo.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Dobla los codos subiendo las manos hacia los hombros.</li>
+                <li><span class="step-num">2</span>Los codos no se mueven, son el eje del movimiento.</li>
+                <li><span class="step-num">3</span>Baja lento resistiendo la goma.</li>
+                <li><span class="step-num">4</span>No balancees el cuerpo para ayudarte.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=curl+biceps+gomas+elasticas+tecnica" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- BISERIE B -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE B · Espalda unilateral + Bíceps</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">B1</span>
+          <div class="ex-main">
+            <div class="ex-name">TRX remo a 1 mano</div>
+            <div class="ex-meta"><span class="ex-tag">Espalda unilateral · Core antirotación</span></div>
+          </div>
+          <span class="ex-sets-badge">x6 c/l</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">La antirotación del core que se trabaja aquí es exactamente lo que necesitas para golpear fuerte sin lesionarte la espalda.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Igual que el remo normal pero cogiendo solo una cinta. El otro brazo extendido al lado o en la cadera.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Tira de la cinta sin rotar el cuerpo.</li>
+                <li><span class="step-num">2</span>Mantén las caderas y hombros paralelos al suelo.</li>
+                <li><span class="step-num">3</span>Aprieta el omóplato al final.</li>
+                <li><span class="step-num">4</span>Completa las repeticiones de un lado antes de cambiar.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=TRX+single+arm+row+remo+una+mano" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">B2</span>
+          <div class="ex-main">
+            <div class="ex-name">Curl de bíceps con mancuernas</div>
+            <div class="ex-meta"><span class="ex-tag">Bíceps · Braquial</span></div>
+          </div>
+          <span class="ex-sets-badge">x10</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">Más rango y control que con gomas. Alterna brazos para mayor concentración en cada repetición.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>De pie o sentado. Mancuernas a los lados con palmas hacia dentro (neutro) o hacia arriba. Codos pegados al cuerpo.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Sube una mancuerna girando la muñeca (supinación) al subir.</li>
+                <li><span class="step-num">2</span>Llega hasta el hombro apretando el bíceps.</li>
+                <li><span class="step-num">3</span>Baja lento, 2-3 segundos de bajada.</li>
+                <li><span class="step-num">4</span>Alterna brazos o hazlos simultáneos.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=curl+biceps+mancuernas+alternos+tecnica" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- BISERIE C -->
+    <div class="biserie-group">
+      <div class="biserie-label"><span>BISERIE C · Espalda avanzada + Hombro posterior</span></div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">C1</span>
+          <div class="ex-main">
+            <div class="ex-name">TRX dominada asistida</div>
+            <div class="ex-meta"><span class="ex-tag">Espalda · Gran dorsal · Bíceps</span></div>
+          </div>
+          <span class="ex-sets-badge">x6</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">La dominada es el rey de la espalda. El TRX permite ajustar la dificultad perfectamente para principiantes.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Tumbado bajo el TRX, agarra las cintas con palmas hacia ti. Cuerpo inclinado, talones en el suelo.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Tira del cuerpo hacia arriba llevando el pecho a las manos.</li>
+                <li><span class="step-num">2</span>Codos van hacia atrás y abajo.</li>
+                <li><span class="step-num">3</span>Cuanto más horizontal el cuerpo, más difícil.</li>
+                <li><span class="step-num">4</span>Baja completamente extendiendo los brazos.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=TRX+dominada+asistida+principiantes" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+
+      <div class="ex-card" onclick="toggleEx(this)">
+        <div class="ex-header">
+          <span class="ex-letter">C2</span>
+          <div class="ex-main">
+            <div class="ex-name">Pájaros deltoides posterior</div>
+            <div class="ex-meta"><span class="ex-tag">Deltoides posterior · Manguito rotador</span></div>
+          </div>
+          <span class="ex-sets-badge">x12</span>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-detail">
+          <div class="padel-tip">El deltoides posterior es el gran olvidado y la principal causa de lesiones de hombro en pádel. Este ejercicio es prevención pura.</div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <div class="detail-block-title">Posición inicial</div>
+              <p>Inclinado hacia delante (torso casi paralelo al suelo). Mancuernas muy ligeras colgando, codos ligeramente doblados.</p>
+            </div>
+            <div class="detail-block">
+              <div class="detail-block-title">Ejecución</div>
+              <ul class="steps-list">
+                <li><span class="step-num">1</span>Eleva los brazos hacia los lados como un pájaro.</span></li>
+                <li><span class="step-num">2</span>Llega a la altura de los hombros o un poco más.</li>
+                <li><span class="step-num">3</span>Aprieta los omóplatos en el punto más alto.</li>
+                <li><span class="step-num">4</span>Baja muy lento. 2-4kg máximo al principio.</li>
+              </ul>
+            </div>
+          </div>
+          <a class="yt-btn" href="https://www.youtube.com/results?search_query=pajaros+deltoides+posterior+mancuernas+tecnica" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+            Buscar vídeo en YouTube
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <div class="section-label">Cardio final</div>
+    <div class="cardio-block">
+      <span class="cardio-icon">⛹️</span>
+      <div class="cardio-text">
+        <div class="cardio-title">Cinta inclinada / Escalera</div>
+        <div class="cardio-sub">Simula los desplazamientos en pista · no corras</div>
+      </div>
+      <span class="cardio-time">25'</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showDay(n) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active-1','active-2','active-3');
+    });
+    document.getElementById('panel-' + n).classList.add('visible');
+    const tabs = document.querySelectorAll('.tab');
+    tabs[n-1].classList.add('active-' + n);
+  }
+
+  function toggleEx(card) {
+    const wasOpen = card.classList.contains('open');
+    // Close all in same panel
+    const panel = card.closest('.panel');
+    panel.querySelectorAll('.ex-card.open').forEach(c => c.classList.remove('open'));
+    if (!wasOpen) card.classList.add('open');
+  }
+</script>
+</body>
+</html>
